@@ -712,29 +712,33 @@ Application Run    OK
 
 1. клонирует репозиторий;
 2. получает актуальное состояние `main`;
-3. создаёт свою рабочую ветку от `main`;
+3. переключается на заранее подготовленную ветку своей команды;
 4. работает только над Worker своей команды;
-5. не изменяет Worker других команд;
-6. после завершения работы создаёт Pull Request в `main`.
+5. не изменяет Worker других команд и Core без согласования;
+6. регулярно синхронизирует свою ветку с `main`;
+7. после завершения работы создаёт Pull Request в `main`.
 
+Рабочие ветки команд создаются и публикуются владельцем проекта заранее.
+
+Напрямую создавать изменения и выполнять push в `main` запрещено.
 Слияние изменений выполняется только через Pull Request.
 
 ---
 
 # 12. Распределение Worker'ов между командами
 
-Каждая команда отвечает только за свой Worker.
+Каждая команда отвечает за свой Worker и работает в заранее подготовленной ветке.
 
-| Команда | Worker | Рабочая директория |
-|---|---|---|
-| Team-1 | HashWorker | `workers/hash/` |
-| Team-2 | FileWorker | `workers/file/` |
-| Team-3 | JsonWorker | `workers/json/` |
-| Team-4 | HttpWorker | `workers/http/` |
-| Team-5 | TextWorker | `workers/text/` |
-| Team-6 | CsvWorker | `workers/csv/` |
-| Team-7 | ProcessWorker | `workers/process/` |
-| Team-8 | ModelWorker | `workers/model/` |
+| Команда | Worker | Рабочая директория | Ветка |
+|---|---|---|---|
+| Team-1 | HashWorker | `workers/hash/` | `feature/hash-worker` |
+| Team-2 | FileWorker | `workers/file/` | `feature/file-worker` |
+| Team-3 | JsonWorker | `workers/json/` | `feature/json-worker` |
+| Team-4 | HttpWorker | `workers/http/` | `feature/http-worker` |
+| Team-5 | TextWorker | `workers/text/` | `feature/text-worker` |
+| Team-6 | CsvWorker | `workers/csv/` | `feature/csv-worker` |
+| Team-7 | ProcessWorker | `workers/process/` | `feature/process-worker` |
+| Team-8 | ModelWorker | `workers/model/` | `feature/model-worker` |
 
 Например, команда `Team-3` работает с:
 
@@ -760,107 +764,113 @@ workers/model/
 
 ---
 
-# 13. Первоначальное получение проекта
+# 13. Начало работы
 
-Если репозиторий ещё не был клонирован:
+Рабочие ветки для всех команд уже созданы владельцем проекта от актуальной версии `main`.
+
+Самостоятельно создавать отдельную ветку для реализации Worker не требуется.
+
+## 13.1. Клонирование репозитория
+
+При первом получении проекта:
 
 ```bash
 git clone <repository-url>
 cd sader
+git fetch origin
 ```
 
-Проверить текущую ветку:
+После клонирования локально будет доступен `main`, а рабочие ветки команд находятся в remote `origin`.
+
+Проверить доступные ветки:
 
 ```bash
-git branch
-```
-
-Переключиться на `main`:
-
-```bash
-git switch main
-```
-
-Получить последнюю версию проекта:
-
-```bash
-git pull origin main
-```
-
-На этом этапе локальный `main` должен соответствовать актуальному состоянию общего проекта.
-
----
-
-# 14. Создание рабочей ветки команды
-
-Работать непосредственно в `main` нельзя.
-
-Рабочая ветка всегда создаётся **от актуального `main`**.
-
-Сначала:
-
-```bash
-git switch main
-git pull origin main
-```
-
-После этого создаётся рабочая ветка.
-
-Рекомендуемый формат:
-
-```text
-feature/<worker-name>
+git branch -a
 ```
 
 Например:
 
-```bash
-git switch -c feature/json-worker
-```
-
-для `JsonWorker`.
-
-Для остальных команд:
-
 ```text
-feature/hash-worker
-feature/file-worker
-feature/json-worker
-feature/http-worker
-feature/text-worker
-feature/csv-worker
-feature/process-worker
-feature/model-worker
+* main
+  remotes/origin/main
+  remotes/origin/feature/hash-worker
+  remotes/origin/feature/file-worker
+  remotes/origin/feature/json-worker
+  ...
 ```
-
-Таким образом:
-
-```text
-                       main
-                        |
-        +---------------+---------------+
-        |               |               |
-        v               v               v
-feature/hash-worker  feature/json-worker  feature/http-worker
-        |               |               |
-    Team-1            Team-3           Team-4
-```
-
-Каждая команда работает независимо в своей ветке.
 
 ---
 
-# 15. Работа над Worker
+## 13.2. Переключение на ветку своей команды
 
-После создания ветки команда реализует только назначенный ей Worker.
+Каждая команда переключается **только на назначенную ей рабочую ветку**.
 
-Например, команда `JsonWorker`:
+Например, для Team-3:
 
 ```bash
-git switch feature/json-worker
+git switch --track origin/feature/json-worker
 ```
 
-работает с:
+После этого:
+
+```bash
+git branch --show-current
+```
+
+должно вывести:
+
+```text
+feature/json-worker
+```
+
+Для остальных команд используется соответствующая ветка из таблицы выше.
+
+Например:
+
+```bash
+# Team-1
+git switch --track origin/feature/hash-worker
+
+# Team-4
+git switch --track origin/feature/http-worker
+
+# Team-8
+git switch --track origin/feature/model-worker
+```
+
+Команда не должна выполнять разработку в:
+
+```text
+main
+```
+
+и не должна использовать рабочую ветку другой команды.
+
+---
+
+# 14. Ежедневная работа
+
+Перед началом работы убедитесь, что используется правильная ветка:
+
+```bash
+git branch --show-current
+```
+
+Например, для Team-3:
+
+```text
+feature/json-worker
+```
+
+Получить последние изменения своей команды:
+
+```bash
+git pull
+```
+
+После этого можно продолжать разработку Worker.
+
+Например, Team-3 работает преимущественно с:
 
 ```text
 workers/json/
@@ -868,23 +878,75 @@ workers/json/
 └── JsonWorker.cpp
 ```
 
-Перед началом работы обязательно проверить ветку:
+После внесения изменений:
 
 ```bash
-git branch --show-current
+git status
+git diff
 ```
 
-Ожидаемый результат:
+Затем:
+
+```bash
+git add .
+git commit -m "feat: implement JsonWorker"
+git push
+```
+
+Таким образом:
 
 ```text
-feature/json-worker
+                GitHub
+                  |
+             main (protected)
+                  |
+       +----------+----------+
+       |          |          |
+       v          v          v
+   Team-1      Team-2      Team-3
+     |            |           |
+feature/       feature/     feature/
+hash-worker   file-worker   json-worker
+     |            |           |
+ HashWorker    FileWorker   JsonWorker
 ```
 
-Не начинайте разработку, если команда показывает:
+Все изменения команды отправляются в её рабочую ветку.
+
+---
+
+# 15. Важное ограничение
+
+Команда работает только в назначенной ей области проекта.
+
+Например:
 
 ```text
-main
+Team-3
+  |
+  +-- feature/json-worker
+          |
+          +-- workers/json/
 ```
+
+Team-3 не должна без согласования изменять:
+
+```text
+workers/hash/
+workers/file/
+workers/http/
+workers/text/
+workers/csv/
+workers/process/
+workers/model/
+
+include/sader/
+src/
+```
+
+Если для реализации Worker требуется изменение общего контракта `Worker`, `Executor`, `Command`, CMake или другого Core-компонента, изменение сначала необходимо согласовать с владельцем проекта.
+
+Это необходимо потому, что изменение Core может одновременно повлиять на все восемь команд.
 
 ---
 
@@ -1049,6 +1111,26 @@ git merge main
 
 ```bash
 git push
+```
+
+Синхронизацию с `main` выполняет один из участников команды осознанно, чтобы несколько разработчиков одновременно не создавали разные merge-коммиты.
+
+Перед Pull Request рабочая ветка обязательно должна быть синхронизирована с актуальным `main`.
+
+```
+origin/main
+    │
+    │ git pull
+    ▼
+local main
+    │
+    │ git merge main
+    ▼
+feature/json-worker
+    │
+    │ build + tests
+    ▼
+origin/feature/json-worker
 ```
 
 ---
