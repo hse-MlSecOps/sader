@@ -1,0 +1,29 @@
+# CMake
+out/
+build/
+cmake-build-*/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+
+# CLion
+.idea/
+
+# Build artifacts
+*.obj
+*.o
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.pdb
+
+# OS
+.DS_Store
+Thumbs.db
