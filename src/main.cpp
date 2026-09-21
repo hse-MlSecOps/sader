@@ -1,13 +1,11 @@
-﻿#include <iostream>
-#include <memory>
-#include <stdexcept>
-#include <string>
-#include <utility>
+﻿#include "stdafx.h"
 
-#include "Command.h"
-#include "CExecutor.h"
-#include "CHashWorker.h"
-#include "CFileWorker.h"
+#include <sader/Command.h>
+#include <sader/Executor.h>
+#include <workers/hash/HashWorker.h>
+#include <workers/file/FileWorker.h>
+#include <workers/csv/CsvWorker.h>
+#include <workers/http/HttpWorker.h>
 
 Command parseCommand(const std::string& line)
 {
@@ -37,15 +35,15 @@ Command parseCommand(const std::string& line)
 
 int main()
 {
-    CExecutor executor;
+    Executor executor;
 
-    executor.addWorker(
-        std::make_unique<CHashWorker>()
-    );
+    executor.addWorker(std::make_unique<HashWorker>());
 
-    executor.addWorker(
-        std::make_unique<CFileWorker>()
-    );
+    executor.addWorker(std::make_unique<FileWorker>());
+
+    executor.addWorker(std::make_unique<CsvWorker>());
+
+    executor.addWorker(std::make_unique<HttpWorker>());
 
     std::string line;
 

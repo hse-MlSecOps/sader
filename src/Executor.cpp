@@ -1,14 +1,12 @@
-#include "CExecutor.h"
+#include <sader/Executor.h>
 
-#include <iostream>
-#include <utility>
 
-void CExecutor::addWorker(std::unique_ptr<CWorker> worker)
+void Executor::addWorker(std::unique_ptr<Worker> worker)
 {
     workers_.push_back(std::move(worker));
 }
 
-void CExecutor::execute(const Command& command) const {
+void Executor::execute(const Command& command) const {
     switch (command.type) 
     {
     case CommandType::Discover:
@@ -21,7 +19,7 @@ void CExecutor::execute(const Command& command) const {
     }
 }
 
-void CExecutor::discover(const std::string& query) const
+void Executor::discover(const std::string& query) const
 {
     bool found = false;
 

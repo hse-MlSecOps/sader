@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CWorker.h"
+#include <sader/Worker.h>
 
-class CFileWorker : public CWorker
+class CsvWorker : public Worker
 {
 public:
-    CFileWorker();
-    ~CFileWorker() override;
+    CsvWorker();
+    ~CsvWorker() override;
 
     std::string name() const override;
     std::string description() const override;
