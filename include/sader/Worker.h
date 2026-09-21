@@ -2,10 +2,10 @@
 
 #include <string>
 
-class CWorker {
+class Worker {
 public:
     virtual std::string name() const = 0;
     virtual std::string description() const = 0;
 
-    virtual ~CWorker() = default;
+    virtual ~Worker() = default;
 };

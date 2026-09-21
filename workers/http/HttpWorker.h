@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CWorker.h"
+#include <sader/Worker.h>
 
-class CHashWorker : public CWorker
+class HttpWorker : public Worker
 {
 public:
-    CHashWorker();
-    ~CHashWorker() override;
+    HttpWorker();
+    ~HttpWorker() override;
 
     std::string name() const override;
     std::string description() const override;

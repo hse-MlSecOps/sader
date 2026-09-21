@@ -1,23 +1,23 @@
-#include "CFileWorker.h"
-
 #include <iostream>
 
-CFileWorker::CFileWorker()
+#include "FileWorker.h"
+
+FileWorker::FileWorker()
 {
     std::cout << "CFileWorker constructed\n";
 }
 
-CFileWorker::~CFileWorker()
+FileWorker::~FileWorker()
 {
     std::cout << "CFileWorker destroyed\n";
 }
 
-std::string CFileWorker::name() const
+std::string FileWorker::name() const
 {
     return "file";
 }
 
-std::string CFileWorker::description() const
+std::string FileWorker::description() const
 {
     return "Read text files and return file content and metadata";
 }

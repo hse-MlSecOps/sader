@@ -1,23 +1,23 @@
-#include "CHashWorker.h"
-
 #include <iostream>
 
-CHashWorker::CHashWorker()
+#include "HashWorker.h"
+
+HashWorker::HashWorker()
 {
     std::cout << "CHashWorker constructed\n";
 }
 
-CHashWorker::~CHashWorker()
+HashWorker::~HashWorker()
 {
     std::cout << "CHashWorker destroyed\n";
 }
 
-std::string CHashWorker::name() const
+std::string HashWorker::name() const
 {
     return "hash";
 }
 
-std::string CHashWorker::description() const
+std::string HashWorker::description() const
 {
     return "Calculate md5 and sha256 hashes for text and files";
 }
