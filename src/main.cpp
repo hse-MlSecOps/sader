@@ -7,6 +7,7 @@
 #include <workers/csv/CsvWorker.h>
 #include <workers/http/HttpWorker.h>
 #include <workers/text/TextWorker.h>
+#include <workers/process/ProcessWorker.h>
 
 Command parseCommand(const std::string& line)
 {
@@ -47,6 +48,7 @@ int main()
     executor.addWorker(std::make_unique<HttpWorker>());
 
     executor.addWorker(std::make_unique<TextWorker>());
+    executor.addWorker(std::make_unique<ProcessWorker>());
 
     std::string line;
 

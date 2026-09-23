@@ -28,6 +28,7 @@ add_executable (Sader
 
     "${CMAKE_SOURCE_DIR}/workers/text/TextWorker.cpp"
    
+    "${CMAKE_SOURCE_DIR}/workers/process/ProcessWorker.cpp"
 )
 
 target_include_directories(Sader
