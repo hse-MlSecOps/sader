@@ -6,6 +6,7 @@
 #include <workers/file/FileWorker.h>
 #include <workers/csv/CsvWorker.h>
 #include <workers/http/HttpWorker.h>
+#include <workers/model/ModelWorker.h>
 
 Command parseCommand(const std::string& line)
 {
@@ -44,6 +45,8 @@ int main()
     executor.addWorker(std::make_unique<CsvWorker>());
 
     executor.addWorker(std::make_unique<HttpWorker>());
+
+    executor.addWorker(std::make_unique<ModelWorker>());
 
     std::string line;
 

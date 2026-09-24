@@ -23,6 +23,8 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/workers/csv/CsvWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
+
+    "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
    
 )
 
