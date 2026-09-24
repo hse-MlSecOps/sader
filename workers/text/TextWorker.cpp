@@ -23,17 +23,20 @@ std::string TextWorker::description() const
     return "Text operations: length, words, lines, find and replace in a string";
 }
 
-TextWorker::Schema TextWorker::schema() const
+Schema TextWorker::schema() const
 {
-    return {
-        {"operation", "string", true, "length, words, lines, find or replace"},
-        {"text", "string", true, "input text"},
-        {"find", "string", false, "for find and replace, not empty"},
-        {"replace", "string", false, "for replace, can be empty"}
+    return Schema{
+        {
+            {"operation", "string", true, "length, words, lines, find or replace", ""},
+            {"text", "string", true, "input text", ""},
+            {"find", "string", false, "for find and replace, not empty", ""},
+            {"replace", "string", false, "for replace, can be empty", ""}
+        },
+        "Result string or error"
     };
 }
 
-TextWorker::Result TextWorker::execute(const Arguments& args) const
+Result TextWorker::execute(const Arguments& args)
 {
     if (args.count("operation") == 0)
     {
