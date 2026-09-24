@@ -1,0 +1,202 @@
+Command finished with exit code 0.
+Command output:
+diff --git a/include/sader/Command.h b/include/sader/Command.h
+index cc6dce1..9b41e19 100644
+--- a/include/sader/Command.h
++++ b/include/sader/Command.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+ #include <string>
++#include <unordered_map>
+ 
+ enum class CommandType
+ {
+@@ -13,4 +14,5 @@ struct Command
+ {
+     CommandType type;
+     std::string argument;
++    std::unordered_map<std::string, std::string> arguments;
+ };
+\ No newline at end of file
+diff --git a/include/sader/Executor.h b/include/sader/Executor.h
+index afea22b..9449a5e 100644
+--- a/include/sader/Executor.h
++++ b/include/sader/Executor.h
+@@ -17,6 +17,8 @@ public:
+ 
+ private:
+     void discover(const std::string& query) const;
++    void describe(const std::string& workerName) const;
++    void call(const std::string& workerName, const Arguments& args) const;
+ 
+     std::vector<std::unique_ptr<Worker>> workers_;
+ };
+\ No newline at end of file
+diff --git a/src/Executor.cpp b/src/Executor.cpp
+index e59c42a..093cfd3 100644
+--- a/src/Executor.cpp
++++ b/src/Executor.cpp
+@@ -13,9 +13,11 @@ void Executor::execute(const Command& command) const {
+         discover(command.argument);
+         break;
+     case CommandType::Describe:
++        describe(command.argument);
+         break;
+     case CommandType::Call:
+-        throw std::runtime_error("Command is not implemented yet");
++        call(command.argument, command.arguments);
++        break;
+     }
+ }
+ 
+@@ -43,4 +45,62 @@ void Executor::discover(const std::string& query) const
+     {
+         std::cout << "No capabilities found\n";
+     }
++}
++
++void Executor::describe(const std::string& workerName) const
++{
++    for (const auto& worker : workers_)
++    {
++        if (worker->name() == workerName)
++        {
++            Schema s = worker->schema();
++
++            std::cout << "=== " << worker->name() << " ===\n";
++            std::cout << worker->description() << "\n\n";
++            std::cout << "Аргументы:\n";
++
++            for (const auto& arg : s.args)
++            {
++                std::cout << "  " << arg.name
++                          << " (" << arg.type << ")"
++                          << (arg.required ? " [обязательный]" : " [необязательный]")
++                          << " - " << arg.description << "\n";
++
++                if (!arg.constraint.empty())
++                {
++                    std::cout << "    Ограничение: " << arg.constraint << "\n";
++                }
++            }
++
++            std::cout << "\nРезультат: " << s.result_description << "\n";
++            return;
++        }
++    }
++
++    std::cout << "Воркер не найден: " << workerName << "\n";
++}
++
++void Executor::call(const std::string& workerName, const Arguments& args) const
++{
++    for (const auto& worker : workers_)
++    {
++        if (worker->name() == workerName)
++        {
++            Result result = worker->execute(args);
++
++            if (result.success)
++            {
++                std::cout << "Успех\n";
++                std::cout << result.output << "\n";
++            }
++            else
++            {
++                std::cout << "Ошибка: " << result.error << "\n";
++            }
++
++            return;
++        }
++    }
++
++    std::cout << "Воркер не найден: " << workerName << "\n";
+ }
+\ No newline at end of file
+diff --git a/src/main.cpp b/src/main.cpp
+index dc4902e..c067c25 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -6,31 +6,71 @@
+ #include <workers/file/FileWorker.h>
+ #include <workers/csv/CsvWorker.h>
+ #include <workers/http/HttpWorker.h>
+-#include <workers/text/TextWorker.h>
++#include <workers/process/ProcessWorker.h>
+ 
+ Command parseCommand(const std::string& line)
+ {
+-    const std::string prefix = "DISCOVER ";
+-
+-    if (line.starts_with(prefix))
++    if (line.starts_with("DISCOVER "))
+     {
+-        std::string query = line.substr(prefix.size());
++        std::string query = line.substr(9);
+ 
+         if (query.empty())
+         {
+-            throw std::invalid_argument(
+-                "DISCOVER requires a query"
+-            );
++            throw std::invalid_argument("DISCOVER требует аргумент");
++        }
++
++        return {CommandType::Discover, std::move(query), {}};
++    }
++
++    if (line.starts_with("DESCRIBE "))
++    {
++        std::string workerName = line.substr(9);
++
++        if (workerName.empty())
++        {
++            throw std::invalid_argument("DESCRIBE требует имя воркера");
++        }
++
++        return {CommandType::Describe, std::move(workerName), {}};
++    }
++
++    if (line.starts_with("CALL "))
++    {
++        std::string rest = line.substr(5);
++
++        // Первое слово — имя воркера, остальное — аргументы key=value
++        std::string workerName;
++        std::unordered_map<std::string, std::string> args;
++
++        std::istringstream stream(rest);
++        stream >> workerName;
++
++        if (workerName.empty())
++        {
++            throw std::invalid_argument("CALL требует имя воркера");
+         }
+ 
+-        return {
+-            CommandType::Discover,
+-            std::move(query)
+-        };
++        std::string token;
++        while (stream >> token)
++        {
++            auto eqPos = token.find('=');
++            if (eqPos == std::string::npos)
++            {
++                throw std::invalid_argument(
++                    "Неверный формат аргумента: " + token + " (ожидается key=value)");
++            }
++
++            std::string key = token.substr(0, eqPos);
++            std::string value = token.substr(eqPos + 1);
++
++            args[key] = value;
++        }
++
++        return {CommandType::Call, std::move(workerName), std::move(args)};
+     }
+ 
+     throw std::invalid_argument(
+-        "Unknown or unsupported command"
++        "Неизвестная команда. Доступные: DISCOVER, DESCRIBE, CALL, EXIT"

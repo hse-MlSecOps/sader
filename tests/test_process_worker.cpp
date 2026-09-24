@@ -41,7 +41,7 @@ int main()
 
         assert(result.success == false);
         assert(result.output.empty());
-        assert(result.error.find("белом списке") != std::string::npos);
+        assert(result.error.find("WhiteList") != std::string::npos);
 
         std::cout << "ПРОЙДЕН\n\n";
     }

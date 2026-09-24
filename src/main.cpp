@@ -11,27 +11,67 @@
 
 Command parseCommand(const std::string& line)
 {
-    const std::string prefix = "DISCOVER ";
-
-    if (line.starts_with(prefix))
+    if (line.starts_with("DISCOVER "))
     {
-        std::string query = line.substr(prefix.size());
+        std::string query = line.substr(9);
 
         if (query.empty())
         {
-            throw std::invalid_argument(
-                "DISCOVER requires a query"
-            );
+            throw std::invalid_argument("DISCOVER требует аргумент");
         }
 
-        return {
-            CommandType::Discover,
-            std::move(query)
-        };
+        return {CommandType::Discover, std::move(query), {}};
+    }
+
+    if (line.starts_with("DESCRIBE "))
+    {
+        std::string workerName = line.substr(9);
+
+        if (workerName.empty())
+        {
+            throw std::invalid_argument("DESCRIBE требует имя воркера");
+        }
+
+        return {CommandType::Describe, std::move(workerName), {}};
+    }
+
+    if (line.starts_with("CALL "))
+    {
+        std::string rest = line.substr(5);
+
+        // Первое слово — имя воркера, остальное — аргументы key=value
+        std::string workerName;
+        std::unordered_map<std::string, std::string> args;
+
+        std::istringstream stream(rest);
+        stream >> workerName;
+
+        if (workerName.empty())
+        {
+            throw std::invalid_argument("CALL требует имя воркера");
+        }
+
+        std::string token;
+        while (stream >> token)
+        {
+            auto eqPos = token.find('=');
+            if (eqPos == std::string::npos)
+            {
+                throw std::invalid_argument(
+                    "Неверный формат аргумента: " + token + " (ожидается key=value)");
+            }
+
+            std::string key = token.substr(0, eqPos);
+            std::string value = token.substr(eqPos + 1);
+
+            args[key] = value;
+        }
+
+        return {CommandType::Call, std::move(workerName), std::move(args)};
     }
 
     throw std::invalid_argument(
-        "Unknown or unsupported command"
+        "Неизвестная команда. Доступные: DISCOVER, DESCRIBE, CALL, EXIT"
     );
 }
 
@@ -57,6 +97,11 @@ int main()
         std::cout << "SADER> ";
 
         if (!std::getline(std::cin, line))
+        {
+            break;
+        }
+
+        if (line == "EXIT" || line == "exit" || line == "QUIT" || line == "quit")
         {
             break;
         }
