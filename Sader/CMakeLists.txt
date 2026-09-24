@@ -20,8 +20,6 @@ add_executable (Sader
 
     "${CMAKE_SOURCE_DIR}/workers/file/FileWorker.cpp"
 
-    "${CMAKE_SOURCE_DIR}/workers/hash/HashWorker.cpp"
-
     "${CMAKE_SOURCE_DIR}/workers/csv/CsvWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
