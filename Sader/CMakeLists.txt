@@ -23,6 +23,8 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/workers/csv/CsvWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
+
+    "${CMAKE_SOURCE_DIR}/workers/json/JsonWorker.cpp"
    
 )
 
@@ -41,3 +43,25 @@ endif()
 target_precompile_headers(Sader PRIVATE
     "${CMAKE_SOURCE_DIR}/src/stdafx.h"
 )
+
+add_executable (json_worker_test 
+    "${CMAKE_SOURCE_DIR}/tests/JsonWorkerTest.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/json/JsonWorker.cpp"
+)
+
+target_include_directories(json_worker_test PRIVATE
+        "${CMAKE_SOURCE_DIR}/src"
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}"
+)
+
+enable_testing()
+
+add_test(
+    NAME JsonWorkerTest
+    COMMAND json_worker_test
+)
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET json_worker_test PROPERTY CXX_STANDARD 20)
+endif()
