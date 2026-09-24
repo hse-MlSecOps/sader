@@ -41,3 +41,21 @@ endif()
 target_precompile_headers(Sader PRIVATE
     "${CMAKE_SOURCE_DIR}/src/stdafx.h"
 )
+
+add_executable(ModelWorkerTest
+    "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/model/ModelWorkerTest.cpp"
+)
+
+target_include_directories(ModelWorkerTest
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}
+)
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET ModelWorkerTest PROPERTY CXX_STANDARD 20)
+endif()
+
+enable_testing()
+add_test(NAME ModelWorkerTest COMMAND ModelWorkerTest)
