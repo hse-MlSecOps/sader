@@ -30,16 +30,6 @@ struct FileResult
 class FileWorker : public Worker
 {
 public:
-    struct Argument
-    {
-        std::string name;
-        std::string type;
-        bool required;
-        std::string limits;
-    };
-
-    using Schema = std::vector<Argument>;
-
     static constexpr std::uintmax_t MaxFileSizeBytes = 1024 * 1024;
 
     FileWorker();
@@ -48,7 +38,7 @@ public:
     std::string name() const override;
     std::string description() const override;
 
-    Schema schema() const;
+    Schema schema() const override;
     FileResult execute(const FileArguments& args) const;
 
 private:
