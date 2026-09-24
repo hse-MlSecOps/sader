@@ -24,12 +24,15 @@ std::string ModelWorker::description() const
 
 Schema ModelWorker::schema() const
 {
-    return {{
-        {"operation", "string", true},
-        {"vector", "number[]", true},
-        {"other", "number[]", false},
-        {"threshold", "number", false},
-    }};
+    return Schema{
+        {
+            {"operation", "string", true, "normalize, cosine or classify", ""},
+            {"vector", "number[]", true, "input vector", ""},
+            {"other", "number[]", false, "second vector for cosine/classify", ""},
+            {"threshold", "number", false, "threshold for classification", ""}
+        },
+        "Result of the operation"
+    };
 }
 
 std::vector<double> ModelWorker::normalize(const std::vector<double>&) const

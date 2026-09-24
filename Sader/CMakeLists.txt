@@ -66,6 +66,8 @@ target_include_directories(file_worker_test PRIVATE
         "${CMAKE_SOURCE_DIR}/src"
         "${CMAKE_SOURCE_DIR}/include"
         "${CMAKE_SOURCE_DIR}"
+)
+
 add_executable(ModelWorkerTest
     "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
     "${CMAKE_SOURCE_DIR}/workers/model/ModelWorkerTest.cpp"
