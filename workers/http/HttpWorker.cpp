@@ -36,6 +36,8 @@ bool HttpWorker::validate(const HttpArguments& args, std::string& error) const
         error = "URL must use http or https scheme";
         return false;
     }
+
+    return true;
 }
 
 HttpResult HttpWorker::execute(const HttpArguments& args) const

@@ -24,27 +24,27 @@ int main()
     }
 
     const Schema schema = worker.schema();
-    if (schema.arguments.size() != 4)
+    if (schema.args.size() != 4)
     {
         return fail("schema size");
     }
 
-    if (schema.arguments[0].name != "operation" || !schema.arguments[0].required)
+    if (schema.args[0].name != "operation" || !schema.args[0].required)
     {
         return fail("operation");
     }
 
-    if (schema.arguments[1].name != "vector" || !schema.arguments[1].required)
+    if (schema.args[1].name != "vector" || !schema.args[1].required)
     {
         return fail("vector");
     }
 
-    if (schema.arguments[2].name != "other" || schema.arguments[2].required)
+    if (schema.args[2].name != "other" || schema.args[2].required)
     {
         return fail("other");
     }
 
-    if (schema.arguments[3].name != "threshold" || schema.arguments[3].required)
+    if (schema.args[3].name != "threshold" || schema.args[3].required)
     {
         return fail("threshold");
     }
