@@ -15,6 +15,8 @@ public:
     std::string description() const override;
     Schema schema() const override;
 
+    // L2-нормализация вектора (unit vector).
+    // Бросает std::invalid_argument для пустого или нулевого вектора.
     std::vector<double> normalize(const std::vector<double>& values) const;
     double cosine(const std::vector<double>& left, const std::vector<double>& right) const;
     std::string classify(

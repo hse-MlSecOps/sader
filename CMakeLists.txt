@@ -1,7 +1,7 @@
-﻿# CMakeList.txt: файл проекта CMake верхнего уровня; проведите глобальную конфигурацию
+# CMakeList.txt: файл проекта CMake верхнего уровня; проведите глобальную конфигурацию
 # и включите сюда подпроекты.
 #
-cmake_minimum_required (VERSION 3.10)
+cmake_minimum_required (VERSION 3.13)
 
 # Включение горячей перезагрузки для компиляторов MSVC, если поддерживается.
 if (POLICY CMP0141)
@@ -10,6 +10,13 @@ if (POLICY CMP0141)
 endif()
 
 project ("Sader")
+
+option(ENABLE_COVERAGE "Build with coverage instrumentation" OFF)
+
+if(ENABLE_COVERAGE)
+    add_compile_options(--coverage -fprofile-arcs -ftest-coverage -fprofile-abs-path)
+    add_link_options(--coverage -lgcov)
+endif()
 
 # Включите подпроекты.
 add_subdirectory ("Sader")

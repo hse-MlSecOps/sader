@@ -1,6 +1,8 @@
 #include "ModelWorker.h"
 
+#include <cmath>
 #include <iostream>
+#include <stdexcept>
 
 ModelWorker::ModelWorker()
 {
@@ -35,9 +37,34 @@ Schema ModelWorker::schema() const
     };
 }
 
-std::vector<double> ModelWorker::normalize(const std::vector<double>&) const
+// L2-нормализация: v / ||v||, где ||v|| = sqrt(sum(v_i^2)).
+// Возвращает unit vector той же направленности.
+std::vector<double> ModelWorker::normalize(const std::vector<double>& values) const
 {
-    return {};
+    if (values.empty())
+    {
+        throw std::invalid_argument("Vector must not be empty");
+    }
+
+    double norm = 0.0;
+    for (double value : values)
+    {
+        norm += value * value;
+    }
+    norm = std::sqrt(norm);
+
+    if (norm == 0.0)
+    {
+        throw std::invalid_argument("Cannot normalize zero vector");
+    }
+
+    std::vector<double> result(values.size());
+    for (std::size_t i = 0; i < values.size(); ++i)
+    {
+        result[i] = values[i] / norm;
+    }
+
+    return result;
 }
 
 double ModelWorker::cosine(const std::vector<double>&, const std::vector<double>&) const
