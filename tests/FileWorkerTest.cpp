@@ -9,17 +9,17 @@ int main()
 {
     namespace fs = std::filesystem;
 
-    FileWorker worker;
+    FileWorker fileWorker;
+    Worker& worker = fileWorker;
 
-    // Проверяем схему FileWorker.
-    const auto schema = worker.schema();
+    const Schema schema = worker.schema();
 
-    assert(schema.size() == 1);
-    assert(schema[0].name == "path");
-    assert(schema[0].type == "string");
-    assert(schema[0].required);
+    assert(schema.args.size() == 1);
+    assert(schema.args[0].name == "path");
+    assert(schema.args[0].type == "string");
+    assert(schema.args[0].required);
+    assert(!schema.result_description.empty());
 
-    // Успешный вызов.
     const fs::path testFile =
         fs::temp_directory_path() / "sader_file_worker_test.txt";
 
@@ -28,25 +28,41 @@ int main()
         output << "hello from FileWorker\n";
     }
 
-    const auto validResult =
-        worker.execute({testFile.string()});
+    const Arguments validArgs{
+        {"path", testFile.string()}
+    };
+
+    const Result validResult = worker.execute(validArgs);
 
     assert(validResult.success);
-    assert(validResult.content == "hello from FileWorker\n");
-    assert(validResult.metadata.name == "sader_file_worker_test.txt");
-    assert(validResult.metadata.extension == ".txt");
-    assert(validResult.metadata.sizeBytes == validResult.content.size());
+    assert(validResult.error.empty());
+    assert(
+        validResult.output.find("Name: sader_file_worker_test.txt")
+        != std::string::npos
+    );
+    assert(
+        validResult.output.find("Extension: .txt")
+        != std::string::npos
+    );
+    assert(
+        validResult.output.find("hello from FileWorker")
+        != std::string::npos
+    );
 
-    // Ошибочный вызов №1: пустой путь.
-    const auto emptyPathResult =
-        worker.execute({""});
+    const Arguments missingPathArgs{};
 
-    assert(!emptyPathResult.success);
-    assert(emptyPathResult.error == "File path is required");
+    const Result missingPathResult =
+        worker.execute(missingPathArgs);
 
-    // Ошибочный вызов №2: файла не существует.
-    const auto missingFileResult =
-        worker.execute({testFile.string() + ".missing"});
+    assert(!missingPathResult.success);
+    assert(missingPathResult.error == "path is required");
+
+    const Arguments missingFileArgs{
+        {"path", testFile.string() + ".missing"}
+    };
+
+    const Result missingFileResult =
+        worker.execute(missingFileArgs);
 
     assert(!missingFileResult.success);
     assert(missingFileResult.error == "File does not exist");
