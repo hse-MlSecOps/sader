@@ -27,3 +27,11 @@ cmake-build-*/
 # OS
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage.info
+coverage-filtered.info
+coverage-report/
+build-cov/
+*.gcda
+*.gcno
