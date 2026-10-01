@@ -16,9 +16,15 @@ public:
     Schema schema() const override;
 
     std::vector<double> normalize(const std::vector<double>& values) const;
-    double cosine(const std::vector<double>& left, const std::vector<double>& right) const;
+
+    double cosine(
+        const std::vector<double>& left,
+        const std::vector<double>& right
+    ) const;
+
     std::string classify(
         const std::vector<double>& left,
         const std::vector<double>& right,
-        double threshold) const;
+        double threshold
+    ) const;
 };
