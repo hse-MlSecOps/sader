@@ -3,6 +3,11 @@
 
 
 # ========================================
+# PostgreSQL (libpqxx)
+# ========================================
+find_package(libpqxx REQUIRED)
+
+# ========================================
 # Prod
 # ========================================
 add_executable (Sader 
@@ -29,6 +34,8 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
    
     "${CMAKE_SOURCE_DIR}/workers/process/ProcessWorker.cpp"
+
+    "${CMAKE_SOURCE_DIR}/src/PostgresRegistry.cpp"
 )
 
 target_include_directories(Sader
@@ -36,6 +43,8 @@ target_include_directories(Sader
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}
 )
+
+target_link_libraries(Sader libpqxx::pqxx)
 
 target_precompile_headers(Sader PRIVATE
     "${CMAKE_SOURCE_DIR}/src/stdafx.h"
