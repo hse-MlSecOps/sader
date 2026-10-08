@@ -1,12 +1,16 @@
 #include <sader/Executor.h>
 
+Executor::Executor(PostgresRegistry& registry)
+    : registry_(registry)
+{
+}
 
 void Executor::addWorker(std::unique_ptr<Worker> worker)
 {
     workers_.push_back(std::move(worker));
 }
 
-void Executor::execute(const Command& command) const {
+void Executor::execute(const Command& command) {
     switch (command.type) 
     {
     case CommandType::Discover:
@@ -21,29 +25,19 @@ void Executor::execute(const Command& command) const {
     }
 }
 
-void Executor::discover(const std::string& query) const
+void Executor::discover(const std::string& query)
 {
-    bool found = false;
+    auto capabilities = registry_.discover(query);
 
-    for (const auto& worker : workers_)
-    {
-        const std::string description = worker->description();
-
-        if (description.find(query) != std::string::npos)
-        {
-            std::cout
-                << worker->name()
-                << " - "
-                << description
-                << '\n';
-
-            found = true;
-        }
-    }
-
-    if (!found)
+    if (capabilities.empty())
     {
         std::cout << "No capabilities found\n";
+        return;
+    }
+
+    for (const auto& cap : capabilities)
+    {
+        std::cout << cap.name << " - " << cap.description << "\n";
     }
 }
 
@@ -80,13 +74,18 @@ void Executor::describe(const std::string& workerName) const
     std::cout << "Воркер не найден: " << workerName << "\n";
 }
 
-void Executor::call(const std::string& workerName, const Arguments& args) const
+void Executor::call(const std::string& workerName, const Arguments& args)
 {
     for (const auto& worker : workers_)
     {
         if (worker->name() == workerName)
         {
+            auto requestId = registry_.nextRequestId();
+            registry_.logCallStart(requestId, workerName);
+
             Result result = worker->execute(args);
+
+            registry_.logCallFinish(requestId, result.success);
 
             if (result.success)
             {

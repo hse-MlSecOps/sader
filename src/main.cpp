@@ -2,6 +2,7 @@
 
 #include <sader/Command.h>
 #include <sader/Executor.h>
+#include <sader/PostgresRegistry.h>
 #include <workers/hash/HashWorker.h>
 #include <workers/file/FileWorker.h>
 #include <workers/csv/CsvWorker.h>
@@ -79,7 +80,8 @@ Command parseCommand(const std::string& line)
 
 int main()
 {
-    Executor executor;
+    PostgresRegistry registry("port=5433 dbname=sader");
+    Executor executor(registry);
 
     executor.addWorker(std::make_unique<HashWorker>());
 
@@ -93,6 +95,7 @@ int main()
     executor.addWorker(std::make_unique<ProcessWorker>());
 
     executor.addWorker(std::make_unique<ModelWorker>());
+
 
     std::string line;
 

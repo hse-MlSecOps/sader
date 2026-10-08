@@ -30,15 +30,13 @@ std::string FileWorker::description() const
     return "Safely read text files and return content and file metadata";
 }
 
-FileWorker::Schema FileWorker::schema() const
+Schema FileWorker::schema() const
 {
-    return {
+    return Schema{
         {
-            "path",
-            "string",
-            true,
-            "existing regular file, maximum size 1 MiB"
-        }
+            {"path", "string", true, "Path to the file to read", "existing regular file, maximum size 1 MiB"}
+        },
+        "File content and metadata or error"
     };
 }
 

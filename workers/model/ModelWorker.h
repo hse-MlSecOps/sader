@@ -5,18 +5,6 @@
 #include <string>
 #include <vector>
 
-struct Schema
-{
-    struct Argument
-    {
-        std::string name;
-        std::string type;
-        bool required;
-    };
-
-    std::vector<Argument> arguments;
-};
-
 class ModelWorker : public Worker
 {
 public:
@@ -25,7 +13,7 @@ public:
 
     std::string name() const override;
     std::string description() const override;
-    Schema schema() const;
+    Schema schema() const override;
 
     std::vector<double> normalize(const std::vector<double>& values) const;
     double cosine(const std::vector<double>& left, const std::vector<double>& right) const;
