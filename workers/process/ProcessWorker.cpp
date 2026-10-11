@@ -75,7 +75,7 @@ std::string ProcessWorker::name() const
 
 std::string ProcessWorker::description() const
 {
-    return "Выполнение команды из белого списка с захватом stdout/exit code";
+    return "Process worker: run whitelisted shell commands, capture stdout and exit code";
 }
 
 Schema ProcessWorker::schema() const

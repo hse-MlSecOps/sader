@@ -2,9 +2,9 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <sstream>
 #include <string>
 #include <system_error>
-#include <utility>
 
 #include "FileWorker.h"
 
@@ -30,31 +30,35 @@ std::string FileWorker::description() const
     return "Safely read text files and return content and file metadata";
 }
 
-FileWorker::Schema FileWorker::schema() const
+Schema FileWorker::schema() const
 {
     return {
         {
-            "path",
-            "string",
-            true,
-            "existing regular file, maximum size 1 MiB"
-        }
+            {
+                "path",
+                "string",
+                true,
+                "Path to the text file",
+                "existing regular file, maximum size 1 MiB"
+            }
+        },
+        "File content and metadata: path, name, extension and size"
     };
 }
 
-bool FileWorker::validate(
-    const FileArguments& args,
+bool FileWorker::validatePath(
+    const std::string& filePath,
     std::uintmax_t& fileSize,
     std::string& error
 ) const
 {
-    if (args.path.empty())
+    if (filePath.empty())
     {
-        error = "File path is required";
+        error = "path is required";
         return false;
     }
 
-    const fs::path path(args.path);
+    const fs::path path(filePath);
     std::error_code ec;
 
     const bool exists = fs::exists(path, ec);
@@ -102,29 +106,50 @@ bool FileWorker::validate(
     return true;
 }
 
-FileResult FileWorker::execute(const FileArguments& args) const
+Result FileWorker::execute(const Arguments& args)
 {
-    std::uintmax_t fileSize = 0;
-    std::string error;
+    for (const auto& entry : args)
+    {
+        if (entry.first != "path")
+        {
+            return {
+                false,
+                "",
+                "Unknown argument: " + entry.first
+            };
+        }
+    }
 
-    if (!validate(args, fileSize, error))
+    const auto pathIt = args.find("path");
+
+    if (pathIt == args.end())
     {
         return {
             false,
-            {},
             "",
-            std::move(error)
+            "path is required"
         };
     }
 
-    const fs::path path(args.path);
+    std::uintmax_t fileSize = 0;
+    std::string error;
+
+    if (!validatePath(pathIt->second, fileSize, error))
+    {
+        return {
+            false,
+            "",
+            error
+        };
+    }
+
+    const fs::path path(pathIt->second);
     std::ifstream input(path, std::ios::binary);
 
     if (!input.is_open())
     {
         return {
             false,
-            {},
             "",
             "Failed to open file for reading"
         };
@@ -139,7 +164,6 @@ FileResult FileWorker::execute(const FileArguments& args) const
     {
         return {
             false,
-            {},
             "",
             "Failed to read file"
         };
@@ -149,23 +173,24 @@ FileResult FileWorker::execute(const FileArguments& args) const
     {
         return {
             false,
-            {},
             "",
             "File is too large: maximum size is 1 MiB"
         };
     }
 
-    FileMetadata metadata{
-        path.lexically_normal().string(),
-        path.filename().string(),
-        path.extension().string(),
-        static_cast<std::uintmax_t>(content.size())
-    };
+    std::ostringstream output;
+
+    output
+        << "Path: " << path.lexically_normal().string() << '\n'
+        << "Name: " << path.filename().string() << '\n'
+        << "Extension: " << path.extension().string() << '\n'
+        << "Size: " << content.size() << " bytes\n"
+        << "Content:\n"
+        << content;
 
     return {
         true,
-        std::move(metadata),
-        std::move(content),
+        output.str(),
         ""
     };
 }
