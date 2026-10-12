@@ -13,6 +13,9 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/include/sader/Executor.h"
     "${CMAKE_SOURCE_DIR}/src/Executor.cpp"
 
+    "${CMAKE_SOURCE_DIR}/include/sader/WorkerRegistry.h"
+    "${CMAKE_SOURCE_DIR}/src/WorkerRegistry.cpp"
+
     "${CMAKE_SOURCE_DIR}/include/sader/Worker.h"
     "${CMAKE_SOURCE_DIR}/src/Worker.cpp"
 

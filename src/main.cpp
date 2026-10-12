@@ -2,6 +2,7 @@
 
 #include <sader/Command.h>
 #include <sader/Executor.h>
+#include <sader/WorkerRegistry.h>
 #include <workers/hash/HashWorker.h>
 #include <workers/file/FileWorker.h>
 #include <workers/csv/CsvWorker.h>
@@ -79,21 +80,16 @@ Command parseCommand(const std::string& line)
 
 int main()
 {
-    Executor executor;
-
-    executor.addWorker(std::make_unique<HashWorker>());
-
-    executor.addWorker(std::make_unique<FileWorker>());
-
-    executor.addWorker(std::make_unique<CsvWorker>());
-
-    executor.addWorker(std::make_unique<HttpWorker>());
-
-    executor.addWorker(std::make_unique<TextWorker>());
-    executor.addWorker(std::make_unique<ProcessWorker>());
-
-    executor.addWorker(std::make_unique<ModelWorker>());
-
+    WorkerRegistry registry;
+    registry.registerWorker(std::make_unique<HashWorker>());
+    registry.registerWorker(std::make_unique<FileWorker>());
+    registry.registerWorker(std::make_unique<CsvWorker>());
+    registry.registerWorker(std::make_unique<HttpWorker>());
+    registry.registerWorker(std::make_unique<TextWorker>());
+    registry.registerWorker(std::make_unique<ProcessWorker>());
+    registry.registerWorker(std::make_unique<ModelWorker>());
+    Executor executor(registry);
+    
     std::string line;
 
     while (true)
