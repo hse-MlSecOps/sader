@@ -1,6 +1,6 @@
 # CMakeList.txt: проект CMake для Sader; включите исходный код и определения,
 # укажите здесь логику для конкретного проекта.
-
+cmake_minimum_required(VERSION 3.20)
 
 # ========================================
 # Prod
@@ -47,6 +47,19 @@ target_precompile_headers(Sader PRIVATE
 # ========================================
 # Test
 # ========================================
+
+add_executable(test_worker_registry
+    "${CMAKE_SOURCE_DIR}/tests/test_worker_registry.cpp"
+    "${CMAKE_SOURCE_DIR}/src/WorkerRegistry.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/hash/HashWorker.cpp"
+)
+
+target_include_directories(test_worker_registry
+    PRIVATE
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}"
+)
+
 add_executable (workers_test 
     "${CMAKE_SOURCE_DIR}/tests/HttpWorkerTest.cpp"
     "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
@@ -92,11 +105,19 @@ add_test(
     NAME FileWorkerTest
     COMMAND file_worker_test
 )
-add_test(NAME ModelWorkerTest COMMAND ModelWorkerTest)
+add_test(
+    NAME ModelWorkerTest 
+    COMMAND ModelWorkerTest)
+
+add_test(
+    NAME WorkerRegistryTest
+    COMMAND test_worker_registry
+)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET Sader PROPERTY CXX_STANDARD 20)
   set_property(TARGET workers_test PROPERTY CXX_STANDARD 20)
   set_property(TARGET file_worker_test PROPERTY CXX_STANDARD 20)
   set_property(TARGET ModelWorkerTest PROPERTY CXX_STANDARD 20)
+  set_property(TARGET test_worker_registry PROPERTY CXX STANDARD 20)
 endif()

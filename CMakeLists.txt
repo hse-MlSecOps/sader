@@ -11,6 +11,8 @@ endif()
 
 project ("Sader")
 
+include(CTest)
+
 # Включите подпроекты.
 add_subdirectory ("Sader")
 
