@@ -31,6 +31,8 @@ target_include_directories(TestProcessWorker PRIVATE
 
 target_compile_features(TestProcessWorker PRIVATE cxx_std_20)
 
+target_compile_features(testWorkerFabric PRIVATE cxx_std_20)
+
 target_precompile_headers(Sader PRIVATE
     <iostream>
     <string>

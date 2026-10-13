@@ -16,6 +16,9 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/include/sader/WorkerRegistry.h"
     "${CMAKE_SOURCE_DIR}/src/WorkerRegistry.cpp"
 
+    "${CMAKE_SOURCE_DIR}/include/sader/WorkerFactory.h"
+    "${CMAKE_SOURCE_DIR}/src/WorkerFactory.cpp"
+
     "${CMAKE_SOURCE_DIR}/include/sader/Worker.h"
     "${CMAKE_SOURCE_DIR}/src/Worker.cpp"
 
@@ -30,7 +33,7 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/workers/text/TextWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
-   
+
     "${CMAKE_SOURCE_DIR}/workers/process/ProcessWorker.cpp"
 )
 
@@ -55,6 +58,24 @@ add_executable(test_worker_registry
 )
 
 target_include_directories(test_worker_registry
+    PRIVATE
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}"
+)
+
+add_executable(testWorkerFabric
+    "${CMAKE_SOURCE_DIR}/tests/testWorkerFabric.cpp"
+    "${CMAKE_SOURCE_DIR}/src/WorkerFactory.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/hash/HashWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/file/FileWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/csv/CsvWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/process/ProcessWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/model/ModelWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/text/TextWorker.cpp"
+)
+
+target_include_directories(testWorkerFabric
     PRIVATE
         "${CMAKE_SOURCE_DIR}/include"
         "${CMAKE_SOURCE_DIR}"
@@ -107,11 +128,17 @@ add_test(
 )
 add_test(
     NAME ModelWorkerTest 
-    COMMAND ModelWorkerTest)
+    COMMAND ModelWorkerTest
+)
 
 add_test(
     NAME WorkerRegistryTest
     COMMAND test_worker_registry
+)
+
+add_test(
+    NAME WorkerFabricTest
+    COMMAND testWorkerFabric
 )
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
@@ -120,4 +147,5 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET file_worker_test PROPERTY CXX_STANDARD 20)
   set_property(TARGET ModelWorkerTest PROPERTY CXX_STANDARD 20)
   set_property(TARGET test_worker_registry PROPERTY CXX STANDARD 20)
+  set_property(TARGET testWorkerFabric PROPERTY CXX STANDARD 20)
 endif()

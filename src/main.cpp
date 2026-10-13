@@ -3,6 +3,7 @@
 #include <sader/Command.h>
 #include <sader/Executor.h>
 #include <sader/WorkerRegistry.h>
+#include <sader/WorkerFactory.h>
 #include <workers/hash/HashWorker.h>
 #include <workers/file/FileWorker.h>
 #include <workers/csv/CsvWorker.h>
@@ -10,7 +11,6 @@
 #include <workers/text/TextWorker.h>
 #include <workers/process/ProcessWorker.h>
 #include <workers/model/ModelWorker.h>
-
 
 Command parseCommand(const std::string& line)
 {
@@ -81,31 +81,27 @@ Command parseCommand(const std::string& line)
 int main()
 {
     WorkerRegistry registry;
-    registry.registerWorker(std::make_unique<HashWorker>());
-    registry.registerWorker(std::make_unique<FileWorker>());
-    registry.registerWorker(std::make_unique<CsvWorker>());
-    registry.registerWorker(std::make_unique<HttpWorker>());
-    registry.registerWorker(std::make_unique<TextWorker>());
-    registry.registerWorker(std::make_unique<ProcessWorker>());
-    registry.registerWorker(std::make_unique<ModelWorker>());
+    registry.registerWorker(WorkerFactory::create(WorkersName::Hash));
+    registry.registerWorker(WorkerFactory::create(WorkersName::File));
+    registry.registerWorker(WorkerFactory::create(WorkersName::Csv));
+    registry.registerWorker(WorkerFactory::create(WorkersName::Http));
+    registry.registerWorker(WorkerFactory::create(WorkersName::Text));
+    registry.registerWorker(WorkerFactory::create(WorkersName::Process));
+    registry.registerWorker(WorkerFactory::create(WorkersName::Model));
     Executor executor(registry);
-    
-    std::string line;
 
+    std::string line;
     while (true)
     {
         std::cout << "SADER> ";
-
         if (!std::getline(std::cin, line))
         {
             break;
         }
-
         if (line == "EXIT" || line == "exit" || line == "QUIT" || line == "quit")
         {
             break;
         }
-
         try
         {
             Command command = parseCommand(line);
