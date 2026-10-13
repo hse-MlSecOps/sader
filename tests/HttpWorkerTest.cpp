@@ -1,5 +1,5 @@
 #include <cassert>
-
+#include <curl/curl.h>
 #include <workers/http/HttpWorker.h>
 
 int main()
