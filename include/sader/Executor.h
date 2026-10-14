@@ -17,6 +17,8 @@ public:
 
 private:
     void discover(const std::string& query) const;
+    void describe(const std::string& workerName) const;
+    void call(const std::string& workerName, const Arguments& args) const;
 
     std::vector<std::unique_ptr<Worker>> workers_;
 };

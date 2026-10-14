@@ -2,22 +2,29 @@
 
 #include "HashWorker.h"
 
+namespace
+{
+    constexpr const char* WorkerName = "hash";
+    constexpr const char* WorkerDescription =
+        "Calculate MD5 and SHA-256 checksums for text values and files";
+}
+
 HashWorker::HashWorker()
 {
-    std::cout << "CHashWorker constructed\n";
+    std::cout << "HashWorker ready for checksum discovery\n";
 }
 
 HashWorker::~HashWorker()
 {
-    std::cout << "CHashWorker destroyed\n";
+    std::cout << "HashWorker finished\n";
 }
 
 std::string HashWorker::name() const
 {
-    return "hash";
+    return WorkerName;
 }
 
 std::string HashWorker::description() const
 {
-    return "Calculate md5 and sha256 hashes for text and files";
+    return WorkerDescription;
 }

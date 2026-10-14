@@ -14,6 +14,21 @@ project ("Sader")
 # Включите подпроекты.
 add_subdirectory ("Sader")
 
+# Тесты ProcessWorker
+add_executable(TestProcessWorker
+    tests/test_process_worker.cpp
+    workers/process/ProcessWorker.cpp
+    src/Worker.cpp
+)
+
+target_include_directories(TestProcessWorker PRIVATE
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/workers"
+    "${CMAKE_SOURCE_DIR}"
+)
+
+target_compile_features(TestProcessWorker PRIVATE cxx_std_20)
+
 target_precompile_headers(Sader PRIVATE
     <iostream>
     <string>
@@ -21,3 +36,18 @@ target_precompile_headers(Sader PRIVATE
     <memory>
     <filesystem>
 )
+
+# Тесты FileWorker
+add_executable(TestFileWorker
+    tests/FileWorkerTest.cpp
+    workers/file/FileWorker.cpp
+    src/Worker.cpp
+)
+
+target_include_directories(TestFileWorker PRIVATE
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/workers"
+    "${CMAKE_SOURCE_DIR}"
+)
+
+target_compile_features(TestFileWorker PRIVATE cxx_std_20)
