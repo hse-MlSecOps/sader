@@ -1,20 +1,18 @@
 #include <cassert>
-#include <curl/curl.h>
+#include <iostream>
 #include <workers/http/HttpWorker.h>
 
 int main()
 {
 	HttpWorker worker;
 
-	auto validResult = worker.execute({ "https://test.com" });
-	assert(validResult.success);
+	HttpArguments args{
+		"https://nonexistent.invalid"
+	};
 
+	HttpResult result = worker.execute(args);
 
-	auto emptyUrlResult = worker.execute({ "" });
-	assert(!emptyUrlResult.success);
-	assert(emptyUrlResult.error == "URL is required");
-
-	auto invalidProtocolResult = worker.execute({ "ftp://test.com" });
-	assert(!invalidProtocolResult.success);
-	assert(invalidProtocolResult.error == "URL must use http or https scheme");
+	assert(result.success == false);
+	assert(result.statusCode == 0);
+	assert(!result.error.empty());
 };

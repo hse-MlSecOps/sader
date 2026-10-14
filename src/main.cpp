@@ -2,6 +2,7 @@
 
 #include <sader/Command.h>
 #include <sader/Executor.h>
+#include <sader/CurlGlobal.h>
 #include <sader/WorkerRegistry.h>
 #include <sader/WorkerFactory.h>
 #include <workers/hash/HashWorker.h>
@@ -80,6 +81,7 @@ Command parseCommand(const std::string& line)
 
 int main()
 {
+    CurlGlobal curlGlobal;
     WorkerRegistry registry;
     registry.registerWorker(WorkerFactory::create(WorkersName::Hash));
     registry.registerWorker(WorkerFactory::create(WorkersName::File));

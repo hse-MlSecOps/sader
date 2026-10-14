@@ -45,6 +45,7 @@ void Executor::describe(const std::string& workerName) const
     if (!worker)
     {
         std::cout << "Воркер не найден: " << workerName << "\n";
+        return;
     }
     Schema s = worker->schema();
     std::cout << "=== " << worker->name() << " ===\n";
@@ -72,10 +73,10 @@ void Executor::call(const std::string& workerName, const Arguments& args) const
     if (!worker)
     {
         std::cout << "Воркер не найден: " << workerName << "\n";
+        return;
     }
 
     Result result = worker->execute(args);
-    
     if (result.success)
     {
         std::cout << "Успех\n";

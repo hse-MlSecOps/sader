@@ -23,6 +23,7 @@ public:
 
     std::string name() const override;
     std::string description() const override;
+    Result execute(const Arguments& args) override;
     HttpResult execute(const HttpArguments& args) const;
 private:
     bool validate(const HttpArguments& args, std::string& error) const;
