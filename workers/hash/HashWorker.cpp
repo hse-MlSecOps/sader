@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <system_error>
+#include <thread>
 
 namespace
 {
@@ -311,7 +312,7 @@ Schema HashWorker::schema() const
                 "string",
                 true,
                 "Hash algorithm",
-                "md5 or sha256"
+                "md5, sha256 or both"
             },
             {
                 "text",
@@ -343,6 +344,38 @@ Result HashWorker::hashBytes(
     const std::string& inputType
 ) const
 {
+    if (algorithm == "both")
+    {
+        std::string md5Digest;
+        std::string sha256Digest;
+
+        std::thread md5Thread(
+            [&md5Digest, &data]()
+            {
+                md5Digest = md5(data);
+            }
+        );
+
+        std::thread sha256Thread(
+            [&sha256Digest, &data]()
+            {
+                sha256Digest = sha256(data);
+            }
+        );
+
+        md5Thread.join();
+        sha256Thread.join();
+
+        std::ostringstream output;
+        output
+            << "Algorithm: both\n"
+            << "Input: " << inputType << '\n'
+            << "MD5: " << md5Digest << '\n'
+            << "SHA-256: " << sha256Digest;
+
+        return {true, output.str(), ""};
+    }
+
     std::string digest;
 
     if (algorithm == "md5")
