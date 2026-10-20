@@ -16,6 +16,7 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/include/sader/Worker.h"
     "${CMAKE_SOURCE_DIR}/src/Worker.cpp"
 
+    "${CMAKE_SOURCE_DIR}/workers/hash/HashWorker.h"
     "${CMAKE_SOURCE_DIR}/workers/hash/HashWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/file/FileWorker.cpp"
