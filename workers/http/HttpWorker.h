@@ -5,6 +5,7 @@
 struct HttpArguments
 {
     std::string url;
+    std::string method = "GET"; // добаил метод по умолчанию
 };
 
 struct HttpResult
@@ -23,7 +24,9 @@ public:
 
     std::string name() const override;
     std::string description() const override;
-    HttpResult execute(const HttpArguments& args) const;
+    HttpResult execute(const HttpArguments& args) const ; 
+    Result execute(const Arguments& args) override; // добавил чтобы не менять базовый класс Worker
+     
 private:
     bool validate(const HttpArguments& args, std::string& error) const;
 };
