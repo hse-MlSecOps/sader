@@ -1,4 +1,4 @@
-﻿# CMakeList.txt: файл проекта CMake верхнего уровня; проведите глобальную конфигурацию
+# CMakeList.txt: файл проекта CMake верхнего уровня; проведите глобальную конфигурацию
 # и включите сюда подпроекты.
 #
 cmake_minimum_required (VERSION 3.10)
@@ -10,6 +10,8 @@ if (POLICY CMP0141)
 endif()
 
 project ("Sader")
+
+enable_testing()
 
 # Включите подпроекты.
 add_subdirectory ("Sader")
@@ -28,6 +30,8 @@ target_include_directories(TestProcessWorker PRIVATE
 )
 
 target_compile_features(TestProcessWorker PRIVATE cxx_std_20)
+
+add_test(NAME TestProcessWorker COMMAND TestProcessWorker)
 
 target_precompile_headers(Sader PRIVATE
     <iostream>
@@ -51,3 +55,5 @@ target_include_directories(TestFileWorker PRIVATE
 )
 
 target_compile_features(TestFileWorker PRIVATE cxx_std_20)
+
+add_test(NAME TestFileWorker COMMAND TestFileWorker)
