@@ -3,6 +3,12 @@
 #
 cmake_minimum_required (VERSION 3.10)
 
+if (POLICY CMP0079)
+  cmake_policy(SET CMP0079 NEW)
+endif()
+
+find_package(CURL REQUIRED)
+
 # Включение горячей перезагрузки для компиляторов MSVC, если поддерживается.
 if (POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
@@ -51,3 +57,22 @@ target_include_directories(TestFileWorker PRIVATE
 )
 
 target_compile_features(TestFileWorker PRIVATE cxx_std_20)
+
+# тесты HttpWorker
+add_executable(TestHttpWorker
+    tests/HttpWorkerTest.cpp
+    workers/http/HttpWorker.cpp
+    src/Worker.cpp
+)
+
+target_include_directories(TestHttpWorker PRIVATE
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/workers"
+    "${CMAKE_SOURCE_DIR}"         
+)
+target_compile_features(TestHttpWorker PRIVATE cxx_std_20)
+target_link_libraries(TestHttpWorker PRIVATE CURL::libcurl)
+target_link_libraries(Sader PRIVATE CURL::libcurl)
+
+# ДОБАВЛЕНО: Линкуем curl ко второму тестовому бинарнику из подпапки
+target_link_libraries(workers_test PRIVATE CURL::libcurl) 
