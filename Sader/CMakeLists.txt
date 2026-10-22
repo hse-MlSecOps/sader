@@ -97,3 +97,53 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET file_worker_test PROPERTY CXX_STANDARD 20)
   set_property(TARGET ModelWorkerTest PROPERTY CXX_STANDARD 20)
 endif()
+
+
+# Optional PostgreSQL audit for FileWorker
+find_package(PostgreSQL QUIET)
+
+if(PostgreSQL_FOUND)
+    target_sources(Sader PRIVATE
+        "${CMAKE_SOURCE_DIR}/workers/file/PostgresFileWorker.cpp"
+    )
+
+    target_include_directories(Sader PRIVATE
+        ${PostgreSQL_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(Sader PRIVATE PostgreSQL::PostgreSQL)
+
+    target_compile_definitions(Sader PRIVATE
+        SADER_FILE_PG_ENABLED=1
+    )
+
+    add_executable(file_worker_postgres_test
+        "${CMAKE_SOURCE_DIR}/tests/FileWorkerPostgresTest.cpp"
+        "${CMAKE_SOURCE_DIR}/workers/file/FileWorker.cpp"
+        "${CMAKE_SOURCE_DIR}/workers/file/PostgresFileWorker.cpp"
+        "${CMAKE_SOURCE_DIR}/src/Worker.cpp"
+    )
+
+    target_include_directories(file_worker_postgres_test PRIVATE
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}"
+        ${PostgreSQL_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(file_worker_postgres_test PRIVATE
+        PostgreSQL::PostgreSQL
+    )
+
+    target_compile_features(file_worker_postgres_test PRIVATE cxx_std_20)
+
+    add_test(
+        NAME FileWorkerPostgresTest
+        COMMAND file_worker_postgres_test
+    )
+
+    set_tests_properties(FileWorkerPostgresTest PROPERTIES
+        SKIP_RETURN_CODE 77
+    )
+else()
+    message(STATUS "PostgreSQL not found: FileWorker audit disabled")
+endif()
