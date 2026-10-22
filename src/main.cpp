@@ -1,9 +1,13 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 
 #include <sader/Command.h>
 #include <sader/Executor.h>
 #include <workers/hash/HashWorker.h>
 #include <workers/file/FileWorker.h>
+#include <cstdlib>
+#ifdef SADER_FILE_PG_ENABLED
+#include <workers/file/PostgresFileWorker.h>
+#endif
 #include <workers/csv/CsvWorker.h>
 #include <workers/http/HttpWorker.h>
 #include <workers/text/TextWorker.h>
@@ -83,7 +87,18 @@ int main()
 
     executor.addWorker(std::make_unique<HashWorker>());
 
+#ifdef SADER_FILE_PG_ENABLED
+    if (const char* dsn = std::getenv("SADER_FILE_DB_DSN"); dsn && *dsn)
+    {
+        executor.addWorker(std::make_unique<PostgresFileWorker>(dsn));
+    }
+    else
+    {
+        executor.addWorker(std::make_unique<FileWorker>());
+    }
+#else
     executor.addWorker(std::make_unique<FileWorker>());
+#endif
 
     executor.addWorker(std::make_unique<CsvWorker>());
 
