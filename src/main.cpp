@@ -5,6 +5,7 @@
 #include <workers/hash/HashWorker.h>
 #include <workers/file/FileWorker.h>
 #include <workers/csv/CsvWorker.h>
+#include "workers/extended_csv/ExtendedCsvWorker.h"
 #include <workers/http/HttpWorker.h>
 #include <workers/text/TextWorker.h>
 #include <workers/process/ProcessWorker.h>
@@ -86,6 +87,9 @@ int main()
     executor.addWorker(std::make_unique<FileWorker>());
 
     executor.addWorker(std::make_unique<CsvWorker>());
+
+    // Регистрируем дополнительный обработчик CSV-файлов
+    executor.addWorker(std::make_unique<ExtendedCsvWorker>());
 
     executor.addWorker(std::make_unique<HttpWorker>());
 

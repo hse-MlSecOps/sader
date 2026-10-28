@@ -21,6 +21,8 @@ add_executable (Sader
     "${CMAKE_SOURCE_DIR}/workers/file/FileWorker.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/csv/CsvWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/extended_csv/ExtendedCsvWorker.cpp"
+    "${CMAKE_SOURCE_DIR}/workers/extended_csv/CsvParser.cpp"
 
     "${CMAKE_SOURCE_DIR}/workers/http/HttpWorker.cpp"
 
@@ -97,3 +99,4 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET file_worker_test PROPERTY CXX_STANDARD 20)
   set_property(TARGET ModelWorkerTest PROPERTY CXX_STANDARD 20)
 endif()
+

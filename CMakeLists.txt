@@ -10,6 +10,7 @@ if (POLICY CMP0141)
 endif()
 
 project ("Sader")
+enable_testing()
 
 # Включите подпроекты.
 add_subdirectory ("Sader")
@@ -51,3 +52,29 @@ target_include_directories(TestFileWorker PRIVATE
 )
 
 target_compile_features(TestFileWorker PRIVATE cxx_std_20)
+
+# Тесты ExtendedCsvWorker
+add_executable(TestExtendedCsvWorker
+    tests/ExtendedCsvWorkerTest.cpp
+    workers/extended_csv/ExtendedCsvWorker.cpp
+    workers/extended_csv/CsvParser.cpp
+    src/Worker.cpp
+)
+
+target_include_directories(TestExtendedCsvWorker PRIVATE
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/workers"
+    "${CMAKE_SOURCE_DIR}"
+)
+
+target_compile_features(TestExtendedCsvWorker PRIVATE cxx_std_20)
+
+# Регистрируем тест ExtendedCsvWorker
+add_test(
+    NAME ExtendedCsvWorkerTest
+    COMMAND TestExtendedCsvWorker
+)
+
+set_tests_properties(ExtendedCsvWorkerTest PROPERTIES
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+)
